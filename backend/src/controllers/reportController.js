@@ -9,10 +9,15 @@ export async function createReport(req, res, next) {
     return res.status(400).json({ error: 'INVALID_REQUEST' });
   try {
     const [[session]] = await pool.execute(
-      'SELECT session_id, project_id, requirements_state FROM ba_session WHERE session_id=?',
+      'SELECT session_id, project_id, requirements_state, current_stage, completion, ready_for_report FROM ba_session WHERE session_id=?',
       [sessionId],
     );
     if (!session) return res.status(404).json({ error: 'Không tìm thấy phiên chat.' });
+    const isComplete =
+      Boolean(session.ready_for_report) || session.current_stage === 'DONE' || Number(session.completion) >= 100;
+    if (format === 'docx' && !isComplete) {
+      return res.status(409).json({ error: 'Phiên chưa hoàn tất, chưa thể xuất DOCX.' });
+    }
     const result = await callN8n('ba-chat', {
       action: 'report',
       session_id: sessionId,
@@ -41,7 +46,30 @@ export async function createReport(req, res, next) {
         warning: session.requirements_state ? null : 'Phiên chưa có dữ liệu yêu cầu.',
       });
     }
-    const file = await exportReport({ sessionId, format, html, markdown });
+    let messages = [];
+    if (format === 'docx') {
+      const [rows] = await pool.execute(
+        'SELECT role, content, suggestions, created_at FROM ba_message WHERE session_id=? ORDER BY id ASC',
+        [sessionId],
+      );
+      messages = rows.map((message) => {
+        let suggestions = message.suggestions;
+        if (typeof suggestions === 'string') {
+          try {
+            suggestions = JSON.parse(suggestions);
+          } catch {
+            suggestions = [];
+          }
+        }
+        return {
+          role: message.role,
+          content: message.content,
+          suggestions: Array.isArray(suggestions) ? suggestions : [],
+          created_at: message.created_at,
+        };
+      });
+    }
+    const file = await exportReport({ sessionId, format, html, markdown, messages });
     const [insert] = await pool.execute(
       'INSERT INTO ba_report (session_id, format, file_path) VALUES (?, ?, ?)',
       [sessionId, format, file.path],

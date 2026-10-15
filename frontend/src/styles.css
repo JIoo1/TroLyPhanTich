@@ -523,11 +523,11 @@ body {
 }
 .suggestions button {
   background: #fff;
-  border: 1px solid #dfe9e1;
+  border: 1px solid #cbd9ce;
   border-radius: 14px;
-  padding: 6px 9px;
-  color: #54715e;
-  font: 10px 'DM Sans';
+  padding: 7px 10px;
+  color: #294a37;
+  font: 500 11px 'DM Sans';
   cursor: pointer;
 }
 .suggestions button span {
@@ -975,6 +975,11 @@ body {
   color: #54715e;
   font: 9px 'DM Sans';
   cursor: pointer;
+}
+.report-actions .report-hint {
+  color: #59675e;
+  font-size: 9px;
+  line-height: 1.4;
 }
 .show-panel {
   position: absolute;

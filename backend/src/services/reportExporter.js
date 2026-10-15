@@ -3,15 +3,20 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { config } from '../config.js';
+import { createDocx } from './docxExporter.js';
 
 const exporterDir = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../export-php');
 
 /** Convert WF02 html/markdown to a persistent report file via the PHP CLI. */
-export async function exportReport({ sessionId, format, html, markdown }) {
+export async function exportReport({ sessionId, format, html, markdown, messages = [] }) {
   if (!['pdf', 'docx'].includes(format)) throw new Error('Định dạng báo cáo không hợp lệ.');
   await fs.mkdir(config.reportDir, { recursive: true });
   const timestamp = new Date().toISOString().replace(/[-:TZ.]/g, '');
   const outputPath = path.join(config.reportDir, `${sessionId}_${timestamp}.${format}`);
+  if (format === 'docx') {
+    await fs.writeFile(outputPath, createDocx({ html, markdown, messages }));
+    return { path: outputPath };
+  }
   const script = path.join(exporterDir, 'export.php');
   const php = process.env.PHP_BINARY || 'php';
 

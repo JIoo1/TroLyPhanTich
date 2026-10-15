@@ -39,6 +39,8 @@ export default function App() {
   );
   const [sessions, setSessions] = useState<SessionSummary[]>([]);
   const refreshSessions = async () => setSessions(await api.listSessions());
+  const canExportDocx =
+    progress.ready_for_report || progress.stage === 'DONE' || progress.completion >= 100;
 
   useEffect(() => {
     const saved = localStorage.getItem('ba-session-id');
@@ -334,7 +336,7 @@ export default function App() {
           <div>
             <strong>Báo cáo BRD</strong>
             <span>
-              {progress.ready_for_report ? 'Đã sẵn sàng xuất' : 'Tạo bản nháp bất cứ lúc nào'}
+              {canExportDocx ? 'Phiên hoàn tất · có thể xuất DOCX' : 'Hoàn tất phiên để xuất DOCX tổng hợp'}
             </span>
           </div>
           <button onClick={() => void makeReport('pdf')} title="Tải PDF">
@@ -343,7 +345,11 @@ export default function App() {
         </div>
         <div className="report-actions">
           <button onClick={() => void makeReport('pdf')}>Tải PDF</button>
-          <button onClick={() => void makeReport('docx')}>Tải DOCX</button>
+          {canExportDocx ? (
+            <button onClick={() => void makeReport('docx')}>Tải DOCX tổng hợp</button>
+          ) : (
+            <span className="report-hint">DOCX khả dụng khi phiên hoàn tất</span>
+          )}
           {report && (
             <a href={report.downloadUrl} download={`BRD.${report.format}`}>
               Tải lại {report.format.toUpperCase()}
