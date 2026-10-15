@@ -7,6 +7,8 @@ export const pool = mysql.createPool({
   user: process.env.MYSQL_USER || 'root',
   password: process.env.MYSQL_PASSWORD || '',
   database: process.env.MYSQL_DATABASE || 'ba_chatbot',
+  // TiDB Cloud requires TLS; keep local MySQL connections unchanged by default.
+  ssl: process.env.MYSQL_SSL === 'true' ? {} : undefined,
   waitForConnections: true,
   connectionLimit: 10,
   charset: 'utf8mb4',
