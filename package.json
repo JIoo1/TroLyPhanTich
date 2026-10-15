@@ -1,0 +1,16 @@
+{
+  "name": "ba-chatbot",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "concurrently \"npm:dev:server\" \"npm:dev:client\"",
+    "dev:server": "npm --prefix backend run dev",
+    "dev:client": "npm --prefix frontend run dev",
+    "lint": "npm run lint --prefix backend && npm run lint --prefix frontend",
+    "format": "prettier --write \"backend/src/**/*.js\" \"backend/test/**/*.js\" \"backend/package.json\" \"backend/eslint.config.js\" \"frontend/src/**/*.{ts,tsx,css}\" \"frontend/package.json\" \"frontend/eslint.config.js\" \"frontend/vite.config.ts\" \"frontend/tailwind.config.js\" \"frontend/postcss.config.js\" \"frontend/tsconfig.json\" \"frontend/index.html\" \"README.md\" \"docs/**/*.md\" \"fixtures/**/*.md\" .prettierrc.json package.json"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2",
+    "prettier": "^3.5.3"
+  }
+}

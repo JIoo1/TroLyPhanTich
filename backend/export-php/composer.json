@@ -1,0 +1,10 @@
+{
+  "name": "ba-studio/report-exporter",
+  "description": "PDF and DOCX export worker used by the Express API",
+  "type": "project",
+  "require": {
+    "php": ">=8.0",
+    "mpdf/mpdf": "^8.2",
+    "phpoffice/phpword": "^1.3"
+  }
+}

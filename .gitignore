@@ -1,0 +1,10 @@
+node_modules/
+*.tsbuildinfo
+backend/export-php/vendor/
+dist/
+.env
+*.log
+backend/storage/reports/*
+backend/storage/uploads/*
+!backend/storage/reports/.gitkeep
+!backend/storage/uploads/.gitkeep
